@@ -106,7 +106,7 @@
     "karma-sourcemap-loader": "^0.3.6",
     "karma-webpack": "^1.7.0",
     "method-override": "^2.3.5",
-    "node-sass": "^3.4.2",
+    "node-sass": "^4.5.3",
     "node-static": "^0.7.7",
     "null-loader": "^0.1.1",
     "phantomjs-polyfill": "0.0.2",
