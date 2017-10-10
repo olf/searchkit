@@ -1,8 +1,10 @@
 import * as React from "react";
 import {mount} from "enzyme";
 import { InputFilter } from "./InputFilter";
-import { SearchkitManager, SimpleQueryString, QueryString } from "../../../../core";
-const bem = require("bem-cn");
+import { 
+  SearchkitManager, SimpleQueryString, QueryString, QueryAccessor
+} from "../../../../core";
+
 import {
   fastClick, hasClass, jsxToHTML, printPrettyHtml
 } from "../../../__test__/TestHelpers"
@@ -25,6 +27,7 @@ describe("InputFilter tests", () => {
     this.searchkit.translateFunction = (key)=> {
       return {
         "searchbox.placeholder":"search placeholder",
+        "searchbox.button":"submit"
       }[key]
     }
 
@@ -38,7 +41,7 @@ describe("InputFilter tests", () => {
                    prefixQueryFields={prefixQueryFields}
                    {...otherProps} />
       );
-      this.accessor = this.searchkit.accessors.getAccessors()[0]
+      this.accessor = this.searchkit.getAccessorByType(QueryAccessor)
     }
 
     this.setResults = ()=> {
@@ -68,6 +71,7 @@ describe("InputFilter tests", () => {
   it("render", () => {
     this.createWrapper()
     expect(this.wrapper.find(".sk-input-filter__text").get(0).placeholder).toBe("search placeholder")
+    expect(this.wrapper.find(".sk-input-filter__action").get(0).value).toBe("submit")
   })
 
   it("toggles visibility", () => {
@@ -100,7 +104,7 @@ describe("InputFilter tests", () => {
             <form>
               <div className="my-input__icon" />
               <input type="text" data-qa="input-filter" className="my-input__text" placeholder="search placeholder" value=""/>
-              <input type="submit" value="search" className="my-input__action" data-qa="submit" />
+              <input type="submit" value="submit" className="my-input__action" data-qa="submit" />
               <div data-qa="remove" className="my-input__remove is-hidden"></div>
             </form>
           </div>

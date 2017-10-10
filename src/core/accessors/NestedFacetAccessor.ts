@@ -4,7 +4,6 @@ import {
   TermQuery,
   TermsBucket,
   FilterBucket,
-  BoolShould,
   BoolMust,
   NestedQuery,
   NestedBucket,
@@ -44,10 +43,14 @@ export class NestedFacetAccessor extends FilterBasedAccessor<LevelState> {
   }
 
 	getBuckets(level) {
-    return this.getAggregations(
+    let buckets:Array<any> = this.getAggregations(
       [this.key, "children", "lvl"+level, "children", "buckets"],
       []
     )
+    return map(buckets, (item)=> {
+      item.key = String(item.key)
+      return item
+    })
 	}
 
 	buildSharedQuery(query) {
@@ -113,7 +116,6 @@ export class NestedFacetAccessor extends FilterBasedAccessor<LevelState> {
   }
 
   buildOwnQuery(query){
-    let aggs = {}
     let levelField = this.options.field+".level"
     let ancestorsField = this.options.field+".ancestors"
     let startLevel = this.options.startLevel || 1
@@ -132,7 +134,7 @@ export class NestedFacetAccessor extends FilterBasedAccessor<LevelState> {
     addLevel(0)
 
 		let levels = this.state.getValue()
-		each(levels, (level,i) => {
+		each(levels, (_level,i) => {
 			let ancestors = map(take(levels, i+1), (level)=>{
 				return TermQuery(ancestorsField, level[0])
 			})

@@ -1,7 +1,7 @@
 import * as React from "react";
 import {mount} from "enzyme";
 import {DynamicRangeFilter} from "./DynamicRangeFilter";
-import {SearchkitManager} from "../../../../core";
+import {SearchkitManager, DynamicRangeAccessor} from "../../../../core";
 import {
   fastClick, hasClass, jsxToHTML, printPrettyHtml
 } from "../../../__test__/TestHelpers"
@@ -12,6 +12,7 @@ describe("Dynamic Range Filter tests", () => {
 
     this.searchkit = SearchkitManager.mock()
     spyOn(this.searchkit, "performSearch")
+    this.rangeFormatter = (count) => count + " score"
     this.createWrapper = () => {
       this.wrapper = mount(
         <DynamicRangeFilter
@@ -19,7 +20,8 @@ describe("Dynamic Range Filter tests", () => {
           searchkit={this.searchkit}
           field="metascore"
           title="metascore"
-          rangeFormatter={(count)=> count + " score"}
+          rangeFormatter={this.rangeFormatter}
+          translations = {{"range.divider":" TO "}}
         />
       );
 
@@ -38,7 +40,7 @@ describe("Dynamic Range Filter tests", () => {
       })
 
       this.wrapper.update()
-      this.accessor = this.searchkit.accessors.getAccessors()[0]
+      this.accessor = this.searchkit.getAccessorByType(DynamicRangeAccessor)
     }
 
   });
@@ -54,9 +56,9 @@ describe("Dynamic Range Filter tests", () => {
               <div className="rc-slider-rail"></div>
               <div className="rc-slider-track rc-slider-track-1" style={{visibility:" visible", " left":" 0%", " width":" 100%"}}></div>
               <div className="rc-slider-step"><span className="rc-slider-dot rc-slider-dot-active" style={{left:" 0%"}}></span><span className="rc-slider-dot rc-slider-dot-active" style={{left:" 100%"}}></span></div>
-              <div role="slider" aria-valuemin="1" aria-valuemax="120" aria-valuenow="1" aria-disabled="false"
+              <div role="slider" tabIndex={0} aria-valuemin="1" aria-valuemax="120" aria-valuenow="1" aria-disabled="false"
                 className="rc-slider-handle rc-slider-handle-1" style={{left:" 0%"}}></div>
-              <div role="slider" aria-valuemin="1" aria-valuemax="120" aria-valuenow="120" aria-disabled="false" className="rc-slider-handle rc-slider-handle-2" style={{left:" 100%"}}></div>
+              <div role="slider" tabIndex={0} aria-valuemin="1" aria-valuemax="120" aria-valuenow="120" aria-disabled="false" className="rc-slider-handle rc-slider-handle-2" style={{left:" 100%"}}></div>
               <div className="rc-slider-mark"><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:" 90%", " marginLeft":" -45%", " left":" 0%"}}>1 score</span><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:" 90%", " marginLeft":" -45%", " left":" 100%"}}>120 score</span></div>
             </div>
           </div>
@@ -75,7 +77,9 @@ describe("Dynamic Range Filter tests", () => {
       fieldOptions:{
         type:"embedded",
         field:"metascore"
-      }
+      },
+      rangeFormatter:this.rangeFormatter,
+      translations:{"range.divider":" TO "}
     })
   })
 

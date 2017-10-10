@@ -1,12 +1,8 @@
-import * as React from "react";
 import * as PropTypes from "prop-types";
 
 import {
-	SearchkitManager,
 	SearchkitComponent,
-	SearchkitComponentProps,
-	FastClick,
-	RangeAccessor,
+	SearchkitComponentProps,	
 	RenderComponentType,
 	RenderComponentPropType,
 	renderComponent,
@@ -15,12 +11,11 @@ import {
 } from "../../../../core"
 
 import {
-	RangeProps, Panel, RangeComponentBuilder,
+	RangeProps, Panel,
 	RangeSlider
 } from "../../../ui"
 
 import {defaults} from "lodash"
-import {map} from "lodash"
 import {get} from "lodash"
 import {identity} from "lodash"
 
@@ -31,8 +26,7 @@ export interface DynamicRangeFilterProps extends SearchkitComponentProps {
 	containerComponent?: RenderComponentType<any>
   rangeComponent?: RenderComponentType<RangeProps>
 	rangeFormatter?:(count:number)=> number | string
-	fieldOptions?:FieldOptions
-
+	fieldOptions?:FieldOptions	
 }
 
 export class DynamicRangeFilter extends SearchkitComponent<DynamicRangeFilterProps, any> {
@@ -64,9 +58,12 @@ export class DynamicRangeFilter extends SearchkitComponent<DynamicRangeFilterPro
 	}
 
 	defineAccessor() {
-		const { id, title, field, fieldOptions } = this.props
+		const { 
+			id, title, field, fieldOptions, 
+			rangeFormatter, translations  } = this.props
 		return new DynamicRangeAccessor(id,{
-			id, title, field, fieldOptions
+			id, title, field, fieldOptions, 
+			rangeFormatter, translations
 		})
 	}
 

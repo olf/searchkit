@@ -4,7 +4,6 @@ import {defaults} from "lodash"
 
 import {
 	SearchkitComponent,
-	SearchkitComponentProps,
 	ViewOptionsAccessor,
 	RenderComponentType,
 	RenderComponentPropType
@@ -15,7 +14,7 @@ import {
 } from "../../"
 
 export interface ViewSwitcherHitsProps extends HitsProps {
-	hitComponents:[{
+	hitComponents?:[{
 		key:string,
 		title:string,
 		itemComponent?:RenderComponentType<HitItemProps>,

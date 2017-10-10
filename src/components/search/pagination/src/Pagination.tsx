@@ -4,25 +4,20 @@ import * as PropTypes from "prop-types";
 import {
   SearchkitComponent,
   PaginationAccessor,
-  FastClick,
   SearchkitComponentProps,
-  PureRender,
-  RenderComponentType,
   RenderComponentPropType,
-  renderComponent
+  renderComponent,
+  block
 } from "../../../../core"
 
 import {
-  Toggle, ListProps, Select
+  Toggle, Select
 } from "../../../ui"
 
 import {defaults} from "lodash"
 import {get} from "lodash"
-import {assign} from "lodash"
-import {map} from "lodash"
-import {compact} from "lodash"
-import {isNaN} from "lodash"
-const bem = require("bem-cn")
+import { isNaN } from "lodash"
+
 
 import { Paginator } from "./PaginationUtils"
 
@@ -121,7 +116,7 @@ export class Pagination extends SearchkitComponent<PaginationProps, any> {
 
   render() {
     if (!this.hasHits()) return null;
-    const className = bem(this.props.mod).state({numbered:this.props.showNumbers})
+    const className = block(this.props.mod).state({numbered:this.props.showNumbers})
 
     const view = renderComponent(this.props.listComponent, {
       items: this.getPages(),

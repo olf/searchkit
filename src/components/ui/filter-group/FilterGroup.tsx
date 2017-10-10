@@ -1,15 +1,11 @@
 import * as React from 'react'
 
 import {
-  ReactComponentType,
-  PureRender,
   FastClick,
+  block
 } from "../../../"
 
-let bemBlock = require("bem-cn")
-import {size} from 'lodash'
-import {toArray} from 'lodash'
-import {map} from 'lodash'
+import { map } from 'lodash'
 
 export interface FilterGroupItemProps {
   key: string
@@ -20,8 +16,7 @@ export interface FilterGroupItemProps {
   removeFilter: Function
 }
 
-@PureRender
-export class FilterGroupItem extends React.Component<FilterGroupItemProps, any> {
+export class FilterGroupItem extends React.PureComponent<FilterGroupItemProps, any> {
 
   constructor(props){
     super(props)
@@ -76,11 +71,11 @@ export class FilterGroup extends React.Component<FilterGroupProps, any> {
   }
 
   render() {
-    const { mod, className, title, filters, removeFilters, removeFilter } = this.props
+    const { mod, className, title, filters } = this.props
 
     const bemBlocks = {
-        container: bemBlock(mod),
-        items: bemBlock (`${mod}-items`)
+        container: block(mod).el,
+        items: block (`${mod}-items`).el
     }
 
     return (

@@ -2,9 +2,9 @@ import * as React from "react";
 import {mount} from "enzyme";
 import {NumericRefinementListFilter} from "../src/NumericRefinementListFilter";
 import {fastClick, hasClass, jsxToHTML, printPrettyHtml} from "../../../../__test__/TestHelpers"
-import {SearchkitManager, Utils} from "../../../../../core";
+import {SearchkitManager, Utils, NumericOptionsAccessor} from "../../../../../core";
 import {Select} from "../../../../ui";
-const bem = require("bem-cn");
+;
 import * as sinon from "sinon";
 import * as _ from "lodash"
 
@@ -22,7 +22,7 @@ describe("NumericRefinementListFilter tests", () => {
           {title:"21 to 40", from:21, to:41}
         ]}/>
       )
-      this.accessor = this.searchkit.accessors.accessors[0]
+      this.accessor = this.searchkit.getAccessorByType(NumericOptionsAccessor)
     }
     this.setResults = ()=> {
       this.searchkit.setResults({

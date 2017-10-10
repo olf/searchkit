@@ -3,8 +3,8 @@ const {
   SearchBox, Hits, RefinementListFilter, Pagination,
   HierarchicalMenuFilter, HitsStats, SortingSelector, NoHits,
   SelectedFilters, ResetFilters, RangeFilter, NumericRefinementListFilter,
-  ViewSwitcherHits, ViewSwitcherToggle, DynamicRangeFilter,
-  InputFilter, GroupedSelectedFilters, FastClick, FastClickComponent
+  ViewSwitcherHits, ViewSwitcherToggle, DynamicRangeFilter,MenuFilter ,
+  InputFilter, GroupedSelectedFilters, FastClick, FastClickComponent, PageSizeSelector
 } = require("../../../../../src")
 
 FastClick.component = FastClickComponent
@@ -17,6 +17,10 @@ const host = "http://demo.searchkit.co/api/movies"
 import * as ReactDOM from "react-dom";
 import * as React from "react";
 const searchkit = new SearchkitManager(host)
+
+searchkit.shouldPeformSearch = (query) => {
+  return !!query.getQueryString()
+}
 
 import * as _ from "lodash"
 
@@ -70,10 +74,13 @@ class App extends React.Component<any, any> {
           <SideBar>
             <HierarchicalMenuFilter fields={["type.raw", "genres.raw"]} title="Categories" id="categories"/>
             <DynamicRangeFilter field="metaScore" id="metascore" title="Metascore" rangeFormatter={(count)=> count + "*"}/>
-            <RangeFilter min={0} max={10} field="imdbRating" id="imdbRating" title="IMDB Rating" showHistogram={true}/>
+            <RangeFilter min={0} max={10} translations={{"range.divider":" to "}} field="imdbRating" id="imdbRating" title="IMDB Rating" showHistogram={true} rangeFormatter={(count) => count + "*"}/>
             <InputFilter id="writers" searchThrottleTime={500} title="Writers" placeholder="Search writers" searchOnChange={true} queryFields={["writers"]} />
-            <RefinementListFilter id="actors" title="Actors" field="actors.raw" size={10}/>
-            <RefinementListFilter translations={{"facets.view_more":"View more writers"}} id="writers" title="Writers" field="writers.raw" operator="OR" size={10}/>
+            <MenuFilter id="metascoreMenu" title="Metascore" field="metaScore" size={10}/>
+            <RefinementListFilter id="ratingFacet" title="Raiting" field="imdbRating" operator="OR" size={10}/>
+            <RefinementListFilter id="actorsFacet" title="Actors" field="actors.raw" size={10}/>
+            <RefinementListFilter id="actorsFacet" title="Actors" field="actors.raw" size={10}/>
+            <RefinementListFilter id="writersFacet" translations={{"facets.view_more":"View more writers"}} title="Writers" field="writers.raw" operator="OR" size={10}/>
             <RefinementListFilter id="countries" title="Countries" field="countries.raw" operator="OR" size={10}/>
             <NumericRefinementListFilter id="runtimeMinutes" title="Length" field="runtimeMinutes" options={[
               {title:"All"},
@@ -90,11 +97,12 @@ class App extends React.Component<any, any> {
                   "hitstats.results_found":"{hitCount} results found"
                 }}/>
                 <ViewSwitcherToggle/>
+                <PageSizeSelector options={[10, 20, 30]} />
                 <SortingSelector options={[
                   {label:"Relevance", field:"_score", order:"desc"},
                   {label:"Latest Releases", field:"released", order:"desc"},
                   {label:"Earliest Releases", field:"released", order:"asc"}
-                ]}/>
+                ]}/>                
               </ActionBarRow>
 
               <ActionBarRow>
@@ -104,7 +112,7 @@ class App extends React.Component<any, any> {
 
             </ActionBar>
             <ViewSwitcherHits
-                hitsPerPage={12} highlightFields={["title","plot"]}
+                highlightFields={["title","plot"]}
                 sourceFilter={["plot", "title", "poster", "imdbId", "imdbRating", "year"]}
                 hitComponents = {[
                   {key:"grid", title:"Grid", itemComponent:MovieHitsGridItem, defaultOption:true},

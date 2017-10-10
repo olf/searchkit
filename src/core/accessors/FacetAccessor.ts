@@ -10,16 +10,14 @@ import {assign} from "lodash"
 import {map} from "lodash"
 import {omitBy} from "lodash"
 import {isUndefined} from "lodash"
-import {keyBy} from "lodash"
-import {reject} from "lodash"
 import {each} from "lodash"
-import {identity} from "lodash"
 
 
 export interface FacetAccessorOptions {
   operator?:string
   title?:string
   id?:string
+  field:string
   size:number
   facetsPerPage?:number
   translations?:Object
@@ -65,7 +63,7 @@ export class FacetAccessor extends FilterBasedAccessor<ArrayState> {
       this.translations = assign({}, this.translations, options.translations)
     }
     this.options.fieldOptions = this.options.fieldOptions || {type:"embedded"}
-    this.options.fieldOptions.field = this.key
+    this.options.fieldOptions.field = this.options.field
     this.fieldContext = FieldContextFactory(this.options.fieldOptions)
   }
 
@@ -73,13 +71,16 @@ export class FacetAccessor extends FilterBasedAccessor<ArrayState> {
     return this.getAggregations([
       this.uuid,
       this.fieldContext.getAggregationPath(),
-      this.key, "buckets"], [])
+      this.options.field, "buckets"], [])
   }
 
   getBuckets(){
-    let rawBuckets = this.getRawBuckets()
-    let keyIndex = keyBy(rawBuckets, "key")
-    let inIndex = (filter)=> !!keyIndex[filter]
+    let rawBuckets:Array<any> = this.getRawBuckets()
+    let keyIndex = {}
+    each(rawBuckets, (item)=> {
+      item.key = String(item.key)
+      keyIndex[item.key] = item
+    })
     let missingFilters = []
     each(this.state.getValue(), (filterKey)=> {
       if(keyIndex[filterKey]) {
@@ -108,7 +109,7 @@ export class FacetAccessor extends FilterBasedAccessor<ArrayState> {
     return this.getAggregations([
       this.uuid,
       this.fieldContext.getAggregationPath(),
-      this.key+"_count", "value"], 0) as number
+      this.options.field+"_count", "value"], 0) as number
   }
 
 
@@ -154,11 +155,11 @@ export class FacetAccessor extends FilterBasedAccessor<ArrayState> {
   buildSharedQuery(query){
     var filters = this.state.getValue()
     var filterTerms = map(filters, (filter)=> {
-      return this.fieldContext.wrapFilter(TermQuery(this.key, filter))
+      return this.fieldContext.wrapFilter(TermQuery(this.options.field, filter))
     })
     var selectedFilters:Array<SelectedFilter> = map(filters, (filter)=> {
       return {
-        name:this.options.title || this.translate(this.key),
+        name:this.options.title || this.translate(this.options.field),
         value:this.translate(filter),
         id:this.options.id,
         remove:()=> this.state = this.state.remove(filter)
@@ -177,21 +178,20 @@ export class FacetAccessor extends FilterBasedAccessor<ArrayState> {
     if (!this.loadAggregations){
       return query
     } else {
-      var filters = this.state.getValue()
       let excludedKey = (this.isOrOperator()) ? this.uuid : undefined
       return query
         .setAggs(FilterBucket(
           this.uuid,
           query.getFiltersWithoutKeys(excludedKey),
           ...this.fieldContext.wrapAggregations(
-            TermsBucket(this.key, this.key, omitBy({
+            TermsBucket(this.options.field, this.options.field, omitBy({
               size:this.size,
               order:this.getOrder(),
               include: this.options.include,
               exclude: this.options.exclude,
               min_doc_count:this.options.min_doc_count
             }, isUndefined)),
-            CardinalityMetric(this.key+"_count", this.key)
+            CardinalityMetric(this.options.field+"_count", this.options.field)
           )
         ))
     }

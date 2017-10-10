@@ -33,7 +33,8 @@ export class SearchBox extends SearchkitComponent<SearchBoxProps, any> {
   throttledSearch: () => void
 
   static translations:any = {
-    "searchbox.placeholder":"Search"
+    "searchbox.placeholder":"Search",
+    "searchbox.button":"search"
   }
   translations = SearchBox.translations
 
@@ -82,7 +83,7 @@ export class SearchBox extends SearchkitComponent<SearchBoxProps, any> {
   defineAccessor(){
     const {
       id, prefixQueryFields, queryFields, queryBuilder,
-      searchOnChange, queryOptions, prefixQueryOptions
+      queryOptions, prefixQueryOptions
     } = this.props
     return new QueryAccessor(id, {
       prefixQueryFields,
@@ -170,7 +171,7 @@ export class SearchBox extends SearchkitComponent<SearchBoxProps, any> {
           ref="queryField"
           autoFocus={this.props.autofocus}
           onInput={this.onChange.bind(this)}/>
-          <input type="submit" value="search" className={block("action")} data-qa="submit"/>
+          <input type="submit" value={this.translate("searchbox.button")} className={block("action")} data-qa="submit"/>
           <div data-qa="loader" className={block("loader").mix("sk-spinning-loader").state({hidden:!this.isLoading()})}></div>
         </form>
       </div>

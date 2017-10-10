@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import { 
   SearchkitComponent, SearchkitComponentProps, FacetAccessor 
 } from "../../../../core"
@@ -19,8 +17,8 @@ export class TagFilterConfig extends SearchkitComponent<TagFilterConfigProps, {}
       field, id, operator, title
     } = this.props
 
-    return new FacetAccessor(field, {
-      id, operator, title, size: 1, loadAggregations: false
+    return new FacetAccessor(id, {
+      id, operator, title, size: 1, loadAggregations: false, field
     })
   }
 

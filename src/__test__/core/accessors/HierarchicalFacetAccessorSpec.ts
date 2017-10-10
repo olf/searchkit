@@ -1,6 +1,6 @@
 import {
-  FacetAccessor, ImmutableQuery,
-  BoolMust, BoolShould, ArrayState, HierarchicalFacetAccessor,
+  ImmutableQuery,SearchkitManager,
+  BoolMust, BoolShould,  HierarchicalFacetAccessor,
   TermQuery, FilterBucket, TermsBucket
 } from "../../../"
 import * as _ from "lodash"
@@ -17,7 +17,7 @@ describe("HierarchicalFacetAccessor", ()=> {
       orderKey:"_term",
       orderDirection:"asc"
     })
-    this.accessor.uuid = "999"
+    this.accessor.setSearchkitManager(SearchkitManager.mock())
     this.accessor.computeUuids()
     this.query = new ImmutableQuery()
     this.toPlainObject = (ob)=> {
@@ -34,21 +34,27 @@ describe("HierarchicalFacetAccessor", ()=> {
         categories_id:{
           lvl2:{
             lvl2:{
-              buckets:[1,2,3]
+              buckets:[
+                {key:1}, {key:2,}, {key:3}
+              ]
             }
           },
           lvl3:{
             lvl3:{
-              buckets:[4,5,6]
+              buckets:[
+                { key: 4 }, { key: 5, }, { key: 6 }
+              ]
             }
           }
         }
       }
     }
-    expect(this.accessor.getBuckets(1))
-      .toEqual([1,2,3])
-    expect(this.accessor.getBuckets(2))
-      .toEqual([4,5,6])
+    expect(this.accessor.getBuckets(1)).toEqual([
+      {key:"1"}, {key:"2"}, {key:"3"}
+    ])
+    expect(this.accessor.getBuckets(2)).toEqual([
+      { key: "4" }, { key: "5" }, { key: "6" }
+    ])
     expect(this.accessor.getBuckets(4))
       .toEqual([])
   })
@@ -109,7 +115,7 @@ describe("HierarchicalFacetAccessor", ()=> {
     let query = this.accessor.buildSharedQuery(this.query)
     query = this.accessor.buildOwnQuery(query)
     expect(_.keys(query.index.filtersMap)).toEqual([
-      'other', '999lvl1', '999lvl2', '999lvl3'
+      'other', 'categories1lvl1', 'categories1lvl2', 'categories1lvl3'
     ])
 
     let order = {_term:"asc"}

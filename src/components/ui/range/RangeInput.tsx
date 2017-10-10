@@ -2,11 +2,8 @@ import * as React from "react";
 
 import { RangeProps } from './RangeProps'
 
-let block = require("bem-cn")
+import {block} from "../../../"
 
-import {defaults} from "lodash"
-import {get} from "lodash"
-import {clamp} from "lodash"
 import {omit} from 'lodash'
 
 /*
@@ -70,7 +67,7 @@ export class RangeInput extends React.Component<RangeInputProps, {}> {
 
   static defaultProps = {
     mod: "sk-range-input",
-    translate: (str) => undefined,
+    translate: (_str) => undefined,
     minPlaceholder: 'min',
     maxPlaceholder: 'max'
   }
@@ -81,7 +78,7 @@ export class RangeInput extends React.Component<RangeInputProps, {}> {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleInputChange(value, key) {
+  handleInputChange(_value, _key) {
     // const { min, max, minValue, maxValue, onFinished } = this.props
     // const values = defaults({
     //   [key]: clamp(value, min, max)
@@ -100,7 +97,7 @@ export class RangeInput extends React.Component<RangeInputProps, {}> {
     const { mod, className, minValue, maxValue, translate, minPlaceholder, maxPlaceholder } = this.props
 
     const bemBlocks = {
-      container: block(mod)
+      container: block(mod).el
     }
 
     return (

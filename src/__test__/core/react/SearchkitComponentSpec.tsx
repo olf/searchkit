@@ -2,9 +2,10 @@ import {
   SearchkitComponent,
   SearchkitManager,
   Accessor,
-  ImmutableQuery
+  ImmutableQuery,
+  AccessorManager,
+  block
 } from "../../../"
-let block = require("bem-cn")
 
 describe("SearchkitComponent", ()=> {
 
@@ -74,6 +75,7 @@ describe("SearchkitComponent", ()=> {
   it("componentWillMount()", ()=> {
     spyOn(this.component, "forceUpdate")
     let searchkit = SearchkitManager.mock()
+    searchkit.accessors = new AccessorManager()
     let accessor = new Accessor()
     this.component.defineAccessor = ()=> accessor
     spyOn(console, "warn")

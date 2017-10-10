@@ -1,7 +1,7 @@
 import * as React from "react";
 import {mount} from "enzyme";
 import {RangeFilter} from "../src/RangeFilter";
-import {SearchkitManager} from "../../../../../core";
+import {SearchkitManager, RangeAccessor} from "../../../../../core";
 import {
   fastClick, hasClass, jsxToHTML, printPrettyHtml
 } from "../../../../__test__/TestHelpers"
@@ -15,6 +15,7 @@ describe("Range Filter tests", () => {
 
     this.searchkit = SearchkitManager.mock()
     spyOn(this.searchkit, "performSearch")
+    this.rangeFormatter = (count) => count + " score"
     this.createWrapper = (withHistogram, interval=undefined) => {
       this.wrapper = mount(
         <RangeFilter
@@ -25,13 +26,14 @@ describe("Range Filter tests", () => {
           max={100}
           title="metascore"
           interval={interval}
-          rangeFormatter={(count)=> count + " score"}
+          translations={{"range.divider":" to "}}
+          rangeFormatter={this.rangeFormatter}
           showHistogram={withHistogram}/>
       );
 
       this.searchkit.setResults({
         "aggregations": {
-          "m": {
+          "m1": {
             "m": {
               "buckets": [
                 {key:"10", doc_count:1},
@@ -52,7 +54,7 @@ describe("Range Filter tests", () => {
       })
 
       this.wrapper.update()
-      this.accessor = this.searchkit.accessors.getAccessors()[0]
+      this.accessor = this.searchkit.getAccessorByType(RangeAccessor)
     }
 
 
@@ -72,7 +74,9 @@ describe("Range Filter tests", () => {
       fieldOptions:{
         type:'embedded',
         field:'metascore'
-      }
+      },
+      rangeFormatter:this.rangeFormatter,
+      translations:{"range.divider": " to "}
     })
   })
 
@@ -101,10 +105,10 @@ describe("Range Filter tests", () => {
                 <div className="rc-slider-rail"></div>
                 <div className="rc-slider-track rc-slider-track-1" style={{visibility:" visible", " left":" 0%", " width":" 100%"}}></div>
                 <div className="rc-slider-step"><span className="rc-slider-dot rc-slider-dot-active" style={{left:" 0%"}}></span><span className="rc-slider-dot rc-slider-dot-active" style={{left:" 100%"}}></span></div>
-                <div role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-disabled="false"
+                <div role="slider" tabIndex={0} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-disabled="false"
                   className="rc-slider-handle rc-slider-handle-1" style={{left:" 0%"}}></div>
-                <div role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-disabled="false" className="rc-slider-handle rc-slider-handle-2" style={{left:" 100%"}}></div>
-                <div className="rc-slider-mark"><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:" 90%", " margin-left":" -45%", " left":" 0%"}}>0 score</span><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:" 90%", " margin-left":" -45%", " left":" 100%"}}>100 score</span></div>
+                <div role="slider" tabIndex={0} aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-disabled="false" className="rc-slider-handle rc-slider-handle-2" style={{left:" 100%"}}></div>
+                <div className="rc-slider-mark"><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:" 90%", " marginLeft":" -45%", " left":" 0%"}}>0 score</span><span className="rc-slider-mark-text rc-slider-mark-text-active" style={{width:" 90%", " marginLeft":" -45%", " left":" 100%"}}>100 score</span></div>
               </div>
             </div>
           </div>
@@ -132,7 +136,8 @@ describe("Range Filter tests", () => {
       min:40, max:60
     })
     expect(this.searchkit.performSearch).toHaveBeenCalled()
-
+    let query = this.searchkit.buildQuery()
+    expect(query.getSelectedFilters()[0].value).toEqual('40 score to 60 score')
     // min/max should clear
     this.wrapper.node.sliderUpdateAndSearch({min:0,max:100})
     expect(this.accessor.state.getValue()).toEqual({})

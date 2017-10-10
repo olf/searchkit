@@ -1,4 +1,4 @@
-import ReactTestUtils = require('react-addons-test-utils')
+import ReactTestUtils = require('react-dom/test-utils')
 import {html as beautifyHtml} from 'js-beautify'
 import { renderToStaticMarkup } from 'react-dom/server'
 import * as ReactDOM from "react-dom"
@@ -36,7 +36,7 @@ export const printPrettyHtml = (html)=> {
     .replace(/<input([^>]*)>/g, "<input$1/>")
     .replace(/readonly=""/g,"readOnly={true}")
     .replace(/font-size/g,"fontSize")
-    .replace(/style="([^"]+)"+/g, (match, style)=> {
+    .replace(/style="([^"]+)"+/g, (_match, style)=> {
       let reactStyle = map(compact(style.split(";")), (keyvalue: string)=> {
         let [key, value] = keyvalue.split(":")
         return `${key}:"${value}"`

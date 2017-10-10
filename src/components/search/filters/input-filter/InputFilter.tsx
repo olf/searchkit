@@ -5,7 +5,7 @@ import {
   QueryAccessor,
   SearchkitComponent,
   SearchkitComponentProps,
-  ReactComponentType,
+  RenderComponentType,
   renderComponent
 } from "../../../../core";
 
@@ -30,7 +30,7 @@ export interface InputFilterProps extends SearchkitComponentProps {
   prefixQueryOptions?:any
   placeholder?: string
   blurAction?:"search"|"restore"
-  containerComponent?: ReactComponentType<any>
+  containerComponent?: RenderComponentType<any>
 }
 
 export class InputFilter extends SearchkitComponent<InputFilterProps, any> {
@@ -39,7 +39,8 @@ export class InputFilter extends SearchkitComponent<InputFilterProps, any> {
   throttledSearch: () => void
 
   static translations:any = {
-    "searchbox.placeholder":"Search"
+    "searchbox.placeholder":"Search",
+    "searchbox.button":"search"
   }
   translations = SearchBox.translations
 
@@ -93,7 +94,7 @@ export class InputFilter extends SearchkitComponent<InputFilterProps, any> {
   defineAccessor(){
     const {
       id, title, prefixQueryFields, queryFields, queryBuilder,
-      searchOnChange, queryOptions, prefixQueryOptions } = this.props
+      queryOptions, prefixQueryOptions } = this.props
     return new QueryAccessor(id, {
       title,
       addToFilters: true,
@@ -193,7 +194,7 @@ export class InputFilter extends SearchkitComponent<InputFilterProps, any> {
             ref="queryField"
             autoFocus={false}
             onInput={this.onChange.bind(this)}/>
-          <input type="submit" value="search" className={block("action")} data-qa="submit"/>
+          <input type="submit" value={this.translate("searchbox.button")} className={block("action")} data-qa="submit"/>
           <div data-qa="remove"
                onClick={this.onClear}
                className={block("remove").state({hidden:value == ""})} />

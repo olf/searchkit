@@ -1,11 +1,10 @@
 import * as React from "react";
 import {mount} from "enzyme";
-let bemBlock = require("bem-cn")
 
 import { TagCloud } from "./TagCloud"
 import { MockList } from "./MockList"
 
-import {fastClick, hasClass, jsxToHTML, printPrettyHtml} from "../../__test__/TestHelpers"
+import {fastClick, jsxToHTML} from "../../__test__/TestHelpers"
 
 describe("TagCloud", ()=> {
 

@@ -13,12 +13,12 @@ function isBoolOp(operator, val) {
   return (keys(val).length == 1) && (keys(val.bool).length == 1)
 }
 
-function flattenBool(operator, arr) {
+function flattenBool(operator, arr:Array<any>) {
   // Flatten bool.must
   var newArr = []
   forEach(arr, node => {
     if (isBoolOp(operator, node)) {
-      newArr.push(...node.bool[operator])
+      newArr = newArr.concat(node.bool[operator])
     } else {
       newArr.push(node)
     }

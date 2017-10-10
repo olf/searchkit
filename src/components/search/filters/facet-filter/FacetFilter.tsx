@@ -4,15 +4,14 @@ import {FacetFilterProps, FacetFilterPropTypes} from "./FacetFilterProps"
 
 import {
   FacetAccessor, SearchkitComponent, ISizeOption,
-  FastClick, renderComponent, FieldOptions
+  FastClick, renderComponent
 } from "../../../../core"
 
 import {CheckboxItemList, Panel} from "../../../ui"
 
-import {defaults} from "lodash"
 import {identity} from "lodash"
 
-export class FacetFilter<T extends FacetFilterProps> extends SearchkitComponent<T, any> {
+export class FacetFilter extends SearchkitComponent<FacetFilterProps, any> {
   accessor: FacetAccessor
 
   static propTypes = FacetFilterPropTypes
@@ -43,7 +42,7 @@ export class FacetFilter<T extends FacetFilterProps> extends SearchkitComponent<
   }
   defineAccessor() {
     return new FacetAccessor(
-      this.props.field, this.getAccessorOptions())
+      this.props.id, this.getAccessorOptions())
   }
 
   defineBEMBlocks() {

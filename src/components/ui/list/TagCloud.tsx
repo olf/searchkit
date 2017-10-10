@@ -1,16 +1,14 @@
 import * as React from "react";
 
 import {
-  FastClick,
-  ReactComponentType,
-  PureRender,
+  RenderComponentType,
   renderComponent,
+  block
 } from "../../../"
 
 import { ItemComponent } from './ItemComponents'
 import { ListProps, ItemProps } from './ListProps'
 
-let block = require("bem-cn")
 
 import {map} from "lodash"
 import {includes} from "lodash"
@@ -30,11 +28,10 @@ function computeMinMax(items, field) {
 export interface TagCloudProps extends ListProps {
   minFontSize?: number
   maxFontSize?: number
-  itemComponent?: ReactComponentType<ItemProps>
+  itemComponent?: RenderComponentType<ItemProps>
 }
 
-@PureRender
-export class TagCloud extends React.Component<TagCloudProps, any> {
+export class TagCloud extends React.PureComponent<TagCloudProps, any> {
 
   static defaultProps: any = {
     mod: "sk-tag-cloud",
@@ -50,8 +47,8 @@ export class TagCloud extends React.Component<TagCloudProps, any> {
     const { mod, className, disabled, items, translate } = this.props
 
     const bemBlocks = {
-      container: block(mod),
-      option: block(`${mod}-option`)
+      container: block(mod).el,
+      option: block(`${mod}-option`).el
     }
 
     const sortedItems = sortBy(items, it => translate(it.title || it.label || it.key).toLowerCase())

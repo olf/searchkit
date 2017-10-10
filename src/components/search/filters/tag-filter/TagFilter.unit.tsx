@@ -2,9 +2,9 @@ import * as React from "react"
 import {mount, render} from "enzyme";
 import {fastClick, hasClass, jsxToHTML, printPrettyHtml, htmlClean} from "../../../__test__/TestHelpers"
 import { TagFilter, TagFilterConfig } from "./";
-import {SearchkitManager, Utils} from "../../../../core";
+import {SearchkitManager, Utils, FacetAccessor} from "../../../../core";
 
-const bem = require("bem-cn");
+;
 import * as _ from "lodash"
 import * as sinon from "sinon";
 
@@ -29,7 +29,7 @@ describe("TagFilter tests", () => {
       }
     })
 
-    this.accessor = this.searchkit.accessors.getAccessors()[0]
+    this.accessor = this.searchkit.getAccessorByType(FacetAccessor)
   }
 
   beforeEach(() => {
@@ -47,9 +47,9 @@ describe("TagFilter tests", () => {
 
     this.createWrapper(
       <div>
-        <TagFilterConfig field="test" id="test id" title="test title" operator="OR" searchkit={this.searchkit} />
-        <TagFilter field="test" value="test option 1" searchkit={this.searchkit} />
-        <TagFilter field="test" value="test option 2" searchkit={this.searchkit} />
+        <TagFilterConfig field="test" id="testId" title="test title" operator="OR" searchkit={this.searchkit} />
+        <TagFilter field="testId" value="test option 1" searchkit={this.searchkit} />
+        <TagFilter field="testId" value="test option 2" searchkit={this.searchkit} />
       </div>
     )
 
@@ -66,8 +66,8 @@ describe("TagFilter tests", () => {
 
     this.createWrapper(
       <div>
-        <TagFilterConfig field="test" id="test id" title="test title" operator="OR" searchkit={this.searchkit} />
-        <TagFilter field="test" value="test option 1" searchkit={this.searchkit} >
+        <TagFilterConfig field="test" id="testId" title="test title" operator="OR" searchkit={this.searchkit} />
+        <TagFilter field="testId" value="test option 1" searchkit={this.searchkit} >
           <div className="custom-element">test option</div>
         </TagFilter>
       </div>
@@ -87,9 +87,9 @@ describe("TagFilter tests", () => {
 
     this.createWrapper(
       <div>
-        <TagFilterConfig field="test" id="test id" title="test title" operator="OR" searchkit={this.searchkit} />
-        <TagFilter field="test" value="test option 1" searchkit={this.searchkit} />
-        <TagFilter field="test" value="test option 2" searchkit={this.searchkit} />
+        <TagFilterConfig field="test" id="testId" title="test title" operator="OR" searchkit={this.searchkit} />
+        <TagFilter field="testId" value="test option 1" searchkit={this.searchkit} />
+        <TagFilter field="testId" value="test option 2" searchkit={this.searchkit} />
       </div>
     )
 

@@ -1,5 +1,8 @@
 import {FilterBasedAccessor} from "./FilterBasedAccessor";
 import {ObjectState} from "../state";
+import {
+	identity, maxBy, get, assign
+} from "lodash"
 
 import {
 	FilterBucket,
@@ -12,8 +15,7 @@ import {
 	FieldContextFactory
 } from "../query";
 
-import {maxBy} from "lodash"
-import {get} from "lodash"
+
 
 export interface RangeAccessorOptions {
 	title:string
@@ -24,6 +26,8 @@ export interface RangeAccessorOptions {
 	field:string,
 	loadHistogram?:boolean
 	fieldOptions?:FieldOptions
+	rangeFormatter?:Function
+	translations?:Object
 }
 
 export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
@@ -31,13 +35,30 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
 	state = new ObjectState({})
 	fieldContext:FieldContext
 
+	static translations: any = {
+		"range.divider": " - "
+	}
+	translations = RangeAccessor.translations
+
 	constructor(key, options:RangeAccessorOptions){
     super(key, options.id)
     this.options = options
 		this.options.fieldOptions = this.options.fieldOptions || {type:"embedded"}
     this.options.fieldOptions.field = this.options.field
-    this.fieldContext = FieldContextFactory(this.options.fieldOptions)
+		this.fieldContext = FieldContextFactory(this.options.fieldOptions)
+		this.options.rangeFormatter = this.options.rangeFormatter || identity
+		if (options.translations) {
+			this.translations = assign({}, this.translations, options.translations)
+		}
   }
+	getSelectedValue(value){
+		let divider = this.translate("range.divider")
+		return [
+			this.options.rangeFormatter(value.min),
+			divider,
+			this.options.rangeFormatter(value.max),
+		].join("")
+	}
 
 	buildSharedQuery(query) {
 		if (this.state.hasValue()) {
@@ -47,7 +68,7 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
       }))
 			let selectedFilter = {
 				name:this.translate(this.options.title),
-				value:`${val.min} - ${val.max}`,
+				value:this.getSelectedValue(val),
 				id:this.options.id,
 				remove:()=> {
 					this.state = this.state.clear()
@@ -55,7 +76,7 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
 			}
 
 			return query
-				.addFilter(this.key, rangeFilter)
+				.addFilter(this.uuid, rangeFilter)
 				.addSelectedFilter(selectedFilter)
 
 		}
@@ -65,7 +86,7 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
 
 	getBuckets(){
     return this.getAggregations([
-			this.key,
+			this.uuid,
 			this.fieldContext.getAggregationPath(),
 			this.key, "buckets"], [])
   }
@@ -76,7 +97,7 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
 			return maxValue === 0
 		} else {
 			return this.getAggregations([
-				this.key,
+				this.uuid,
 				this.fieldContext.getAggregationPath(),
 				this.key, "value"], 0) === 0
 		}
@@ -90,10 +111,10 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
   }
 
   buildOwnQuery(query) {
-			let otherFilters = query.getFiltersWithoutKeys(this.key)
+			let otherFilters = query.getFiltersWithoutKeys(this.uuid)
 			let filters = BoolMust([
 				otherFilters,
-				this.fieldContext.wrapFilter(					
+				this.fieldContext.wrapFilter(
 					RangeQuery(this.options.field,{
 						gte:this.options.min, lte:this.options.max
 					})
@@ -116,7 +137,7 @@ export class RangeAccessor extends FilterBasedAccessor<ObjectState> {
 			}
 
 			return query.setAggs(FilterBucket(
-				this.key,
+				this.uuid,
 				filters,
 				...this.fieldContext.wrapAggregations(metric)
 			))

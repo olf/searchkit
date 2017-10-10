@@ -8,14 +8,25 @@ machine:
     PATH: "${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin"
 
   node:
-    version: 6.9.1
+    version: 8.6.0
 
 dependencies:
-  override:
-    - yarn
-  cache_directories:
-    - ~/.cache/yarn
+  pre: 
+    - echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+
+deployment:
+  beta:
+    tag: /^v\d+\.\d+\.\d+\-\d+$/
+    commands:
+      - npm publish --tag beta
+  # beta:
+  #   tag: /^v\d+\.\d+\.\d+\+$/
+  #   commands:
+  #     - npm publish
+  #     - gitbook stuff
+
 
 test:
   pre:
     - npm install -g karma-cli
+    - npm run build
