@@ -11,16 +11,19 @@
     "noEmitOnError": true,
     "noUnusedParameters":true,
     "noImplicitUseStrict":true,
+    "allowSyntheticDefaultImports":false,
     "jsx": "react",
     "lib":[
       "es5", "es2015", "dom"
+    ],
+    "types":[
+      "jest", "node"
     ]
   },
 
   "include":[
     "./src/**/*.ts",
-    "./src/**/*.tsx",
-    "./test/**/*.ts"
+    "./src/**/*.tsx"
   ],
   "exclude": [
     "node_modules"
